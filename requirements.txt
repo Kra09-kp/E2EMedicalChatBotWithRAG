@@ -1,9 +1,12 @@
 langchain
 langchain-groq
 langchain-community
+langchain-huggingface
+pinecone
+langchain-pinecone
 fastapi
 uvicorn
 python-dotenv
 pypdf
-sentence-transformer
+sentence-transformers
 -e .

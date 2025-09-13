@@ -1,11 +1,10 @@
-import os
 import sys
 import datetime
 
 
 
 
-class BookRecommenderException(Exception):
+class AppException(Exception):
     """
     Base class for all custom exceptions in the web application.
     """
@@ -18,7 +17,7 @@ class BookRecommenderException(Exception):
         
         self.exc_info = error_detail.exc_info() if error_detail else sys.exc_info()
 
-        self.error_message = BookRecommenderException.error_message_detail(error_message)
+        self.error_message = AppException.error_message_detail(error_message)
 
     @staticmethod
     def error_message_detail(error: Exception) -> str: # type: ignore
@@ -46,7 +45,7 @@ class BookRecommenderException(Exception):
         return error_message
     
     def __repr__(self) -> str:
-        return BookRecommenderException.__name__.__str__()
+        return AppException.__name__.__str__()
 
     def __str__(self) -> str:
         return self.error_message
