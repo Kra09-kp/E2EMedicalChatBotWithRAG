@@ -20,9 +20,11 @@ class ConfigurationManager:
                 data_path=chatbot_config['DATA_PATH'],
                 embedding_model_name=chatbot_config['EMBEDDING_MODEL_NAME'],
                 system_prompt_path=chatbot_config['SYSTEM_PROMPT_PATH'],
-                llm_model_name=chatbot_config['LLM_MODEL_NAME']
+                llm_model_name=chatbot_config['LLM_MODEL_NAME'],
+                index_name=chatbot_config['INDEX_NAME'],
+                dimension=chatbot_config['DIMENSION']
             )
-            logger.info(f"ChatBotConfig: {config}")
             return config
         except Exception as e:
+            logger.error(f"Error in getting chatbot config: {e}")
             raise AppException(e) from e

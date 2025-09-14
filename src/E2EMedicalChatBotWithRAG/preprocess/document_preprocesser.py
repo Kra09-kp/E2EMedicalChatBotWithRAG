@@ -1,5 +1,4 @@
 from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
 from langchain.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -8,14 +7,10 @@ from langchain.schema import Document
 
 
 class DocumentPreprocesser:
-    def __init__(self, config=ConfigurationManager()):
-        try:
-            self.config = config.get_chatbot_config()
-            
-        except Exception as e:
-            raise AppException(e)
+    def __init__(self):
+        pass
         
-    def run(self):
+    def run(self,doc_path):
         """
         Main entry point for the DocumentPreprocesser class.
 
@@ -28,8 +23,8 @@ class DocumentPreprocesser:
         """
         try:
             # Load documents from the configured data path
-            documents = self._load_documents()
-            logger.info(f"Loaded {len(documents)} documents from {self.config.data_path}")
+            documents = self._load_documents(doc_path)
+            logger.info(f"Loaded {len(documents)} documents from {doc_path}")
 
             # Filter out any documents that don't meet the specified criteria
             documents = self._filter_documents(documents)
@@ -43,10 +38,10 @@ class DocumentPreprocesser:
         else:
             return documents
 
-    def _load_documents(self):
+    def _load_documents(self, doc_path: str) -> List[Document]:
         try:
             loader = DirectoryLoader(
-                str(self.config.data_path),
+                doc_path,
                 glob="*.pdf",
                 loader_cls=PyPDFLoader #type:ignore
             )

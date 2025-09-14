@@ -7,3 +7,5 @@ class ChatBotConfig:
     embedding_model_name: str
     system_prompt_path: Path
     llm_model_name: str
+    index_name: str
+    dimension: int

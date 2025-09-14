@@ -3,6 +3,7 @@ from src.E2EMedicalChatBotWithRAG.utils import load_env_variable
 from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
 from langchain_huggingface import HuggingFaceEmbeddings
+from src.E2EMedicalChatBotWithRAG.preprocess import DocumentPreprocesser
 import torch
 
 
@@ -15,11 +16,26 @@ class EmbeddingModel:
             raise AppException(e) from e
     
     def embed(self,doc):
-        
-        pass
-
+        try:
+            preprocessor = DocumentPreprocesser()
+            processed_doc = preprocessor.run(doc)
+            texts = [doc.page_content for doc in processed_doc]
+            embeddings = self._get_model().embed_documents(texts)
+            return embeddings
+        except Exception as e:
+            logger.error(f"Error in embedding document: {e}")
+            raise AppException(e) from e
 
     def _get_model(self):
+        """
+        Loads the configured HuggingFace embedding model.
+
+        This function loads the configured HuggingFace embedding model and returns it.
+        If there is an error during the loading of the embedding model, an AppException is raised.
+
+        Returns:
+            HuggingFaceEmbeddings: The loaded embedding model.
+        """
         try:
             model_name = self.config.embedding_model_name
             model_kwargs = {'device': 'cuda' if torch.cuda.is_available() else 'cpu'}
