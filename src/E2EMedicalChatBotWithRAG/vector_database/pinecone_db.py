@@ -44,11 +44,11 @@ class PineconeDB(EmbeddingModel):
             if not self.pinecone_client.has_index(self.index_name):
                 logger.warning(
                     f"Pinecone index '{self.index_name}' not found. "
-                    "You must run create_vector_store_from_docs() before retrieval."
+                    "You must call create_vector_store_and_retriever()."
                 )
-            vector_store = self._load_vector_store(
-                embedding_model=self.embedding_model,
-                index_name=self.index_name
+            vector_store =  PineconeVectorStore.from_existing_index(
+                embedding=self.embedding_model,
+                index_name=self.index_name,
             )
             retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
         except Exception as e:
@@ -57,7 +57,7 @@ class PineconeDB(EmbeddingModel):
             return retriever
 
 
-    def create_vector_store_from_docs(self,chunked_text,embedding_model):
+    def create_vector_store_and_retriever(self,chunked_text,embedding_model):
         """
         Creates a new Pinecone vector store from the given list of documents.
 
@@ -83,12 +83,13 @@ class PineconeDB(EmbeddingModel):
                 embedding=embedding_model,  # the embedding model to use for creating the vector store
                 index_name=self.index_name,  # the name of the index to use for the vector store
             )
+            retriever = doc_vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
         except Exception as e:
             # if there is an error during the creation of the vector store, raise an AppException
             raise AppException(e)
         else:
             # otherwise, return the created vector store
-            return doc_vector_store
+            return retriever
 
     def add_document_to_store(self,doc_vector_store,new_doc):
         """
@@ -133,22 +134,3 @@ class PineconeDB(EmbeddingModel):
             )
             logger.info(f"Created Pinecone index: {self.index_name}")
 
-    def _load_vector_store(self,embedding_model,index_name):
-        """
-        Loads an existing Pinecone vector store from the configured index.
-
-        Returns:
-            PineconeVectorStore: The loaded vector store.
-        """
-        try:
-            # load existing index
-            doc_vector_store = PineconeVectorStore.from_existing_index(
-                embedding=embedding_model,
-                index_name=index_name,
-            )
-        except Exception as e:
-            raise AppException(e)
-        else:
-            return doc_vector_store
-    
-    
