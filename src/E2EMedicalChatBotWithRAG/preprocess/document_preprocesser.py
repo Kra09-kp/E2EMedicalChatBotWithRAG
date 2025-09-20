@@ -4,13 +4,18 @@ from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 from langchain.schema import Document
+from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 
 
 class DocumentPreprocesser:
-    def __init__(self):
-        pass
+    def __init__(self,config=ConfigurationManager()):
+        try:
+            self.config = config.get_chatbot_config()
+        except Exception as e:
+            logger.error(f"Error in ConfigurationManager: {e}")
+            raise AppException(e) from e
         
-    def run(self,doc_path):
+    def run(self,doc_path=None):
         """
         Main entry point for the DocumentPreprocesser class.
 
@@ -22,8 +27,10 @@ class DocumentPreprocesser:
             List[Document]: The list of preprocessed documents.
         """
         try:
+            if doc_path is None:
+                doc_path = self.config.data_path
             # Load documents from the configured data path
-            documents = self._load_documents(doc_path)
+            documents = self._load_documents(str(doc_path))
             logger.info(f"Loaded {len(documents)} documents from {doc_path}")
 
             # Filter out any documents that don't meet the specified criteria

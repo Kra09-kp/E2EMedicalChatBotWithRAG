@@ -56,7 +56,7 @@ class RedisDB(EmbeddingModel):
             return retriever
 
 
-    def create_vector_store_and_retriever(self,chunked_text,embedding_model):
+    def create_vector_store(self,chunked_text):
         """
         Creates a new redis vector store from the given list of documents.
 
@@ -68,29 +68,26 @@ class RedisDB(EmbeddingModel):
 
         Args:
             chunked_text (List[Document]): A list of documents to create the vector store from.
-            embedding_model (Any): The embedding model to use for creating the vector store.
 
         Returns:
             redisVectorStore: The created vector store.
         """
         try:
             # create a new redis vector store from the documents
-            doc_vector_store = self.redis_client.from_documents(
+            vector_store = self.redis_client.from_documents(
                 documents=chunked_text,  # list of documents to create the vector store from
-                embedding=embedding_model,  # the embedding model to use for creating the vector store
+                embedding=self.embedding_model,  # the embedding model to use for creating the vector store
                 index_name=self.index_name,  # the name of the index to use for the vector store
                 redis_url=self.redis_url
-
             )
-            retriever = doc_vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+            logger.info("Your data has been stored in the vectore store")
         except Exception as e:
             # if there is an error during the creation of the vector store, raise an AppException
             raise AppException(e)
-        else:
-            # otherwise, return the created vector store
-            return retriever
+        
+            
 
-    def add_document_to_store(self,doc_vector_store,new_doc):
+    def add_document_to_store(self,new_doc):
         """
         Adds a new document to the redis vector store.
 
@@ -102,7 +99,13 @@ class RedisDB(EmbeddingModel):
             AppException: If there is an error during the addition of the document to the vector store.
         """
         try:
-            doc_vector_store.add_documents(documents=[new_doc])
+            vector_store =  self.redis_client.from_existing_index(
+                embedding=self.embedding_model,
+                index_name=self.index_name,
+                redis_url=self.redis_url
+            )
+            vector_store.add_documents(documents=[new_doc])
+            logger.info("Data stored successfully ")
         except Exception as e:
             raise AppException(e)
         

@@ -1,25 +1,33 @@
 from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.chains.rag_chain import RAGChain
+from src.E2EMedicalChatBotWithRAG.vector_database import RedisDB
+from src.E2EMedicalChatBotWithRAG.preprocess import DocumentPreprocesser
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
+from langchain.schema import Document
 
-rag_chain = RAGChain()
 
-async def main():
+def main():
     try:
-       
-        question = input("Enter your medical question: ")
-        print(f"Question: {question}")
-
-        print(f"Answer: \n")
-        async for token in rag_chain.ainvoke(question):
-            print(token, end="", flush=True)
-        
+        redis_client = RedisDB()
+        document_preprocesser = DocumentPreprocesser()
+        preprocessed_data = document_preprocesser.run()
+        redis_client.create_vector_store(preprocessed_data)
+        new_doc = Document(
+            page_content="This project is built by Kirti Pogra, she used langchain and groq and RAG functionalitize.\
+                And this project is for her portfolio. \
+                The code is available on GitHub. The project name is medical chatbot using rag.\
+                Kirti Pogra is persuing MCA in Artificial Intelligence and Machine Learning.\
+                She is trying to build her career in the field of Deep Learning and GenAI.",
+            metadata={"source": "kirti pogra"}
+        )
+        redis_client.add_document_to_store(new_doc)
     except Exception as e:
-        logger.error(f"Error in main: {e}")
-        raise AppException(e) from e
+        logger.error(f"An error occurred: {e}")
+        raise AppException(e)
 
-import asyncio
+
+import time
 
 if __name__ == "__main__":
-    print("Hello, Welcome to E2EMedicalChatBotWithRAG!")
-    asyncio.run(main())
+    start_time = time.time()
+    main()
+    print(f"This took around {(time.time()-start_time)/60} minutes")
