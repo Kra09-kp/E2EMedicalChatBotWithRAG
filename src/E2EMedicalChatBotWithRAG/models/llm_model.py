@@ -4,9 +4,11 @@ from src.E2EMedicalChatBotWithRAG.logger import logger
 from src.E2EMedicalChatBotWithRAG.utils import load_env_variable,get_prompt_text
 from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
+from langchain.callbacks.streaming_aiter import AsyncIteratorCallbackHandler
 
+
+# print("LLMModel.py is loaded")
 load_env_variable("GROQ_API_KEY")
-load_env_variable("PINECONE_API_KEY")
 
 class LLMAssistant:
     def __init__(self,config=ConfigurationManager()):
@@ -29,11 +31,13 @@ class LLMAssistant:
             ChatGroq: The configured language model.
         """
         try:
+            handler = AsyncIteratorCallbackHandler()
             llm = ChatGroq(
                 model=self.config.llm_model_name,
                 temperature=0.7,
-                max_tokens=512
-            )
+                max_tokens=512,
+                streaming=True,                # 🔑 enable streaming
+                                        )
             return llm
         except Exception as e:
             logger.error(f"Error initializing llm model: {e}")

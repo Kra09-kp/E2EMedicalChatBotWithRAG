@@ -1,26 +1,25 @@
 from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.utils import load_env_variable
 from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
 from src.E2EMedicalChatBotWithRAG.models.embedding_model import EmbeddingModel
-from pinecone import Pinecone
-from pinecone import ServerlessSpec
-from langchain_pinecone import PineconeVectorStore
+from langchain_redis import RedisVectorStore
 
-pinecone_api_key = load_env_variable("PINECONE_API_KEY")
 
-class PineconeDB(EmbeddingModel):
+class RedisDB(EmbeddingModel):
     """ 
-    A class for interacting with Pinecone vector database.
+    A class for interacting with Redis vector database.
     """
     def __init__(self,config=ConfigurationManager()):
         try:
+            super().__init__()
+
             self.config = config.get_chatbot_config()
             self.index_name = self.config.index_name
             self.dimension = self.config.dimension  # Dimension of the embedding model
-            self._init_connection()
-            super().__init__()
+            self.redis_url = self.config.redis_url
             self.embedding_model = self._get_model()
+
+            self._init_connection()
 
         except Exception as e:
             logger.error(f"Error in ConfigurationManager: {e}")
@@ -28,7 +27,7 @@ class PineconeDB(EmbeddingModel):
         
     def get_retriever(self):
         """
-        Load a retriever for similarity search on an existing Pinecone index.
+        Load a retriever for similarity search on an existing Redis index.
 
         This method only loads; it will not create or populate the index.
         If the index is missing, a warning is logged and an AppException is raised.
@@ -41,16 +40,16 @@ class PineconeDB(EmbeddingModel):
             AppException: If the index does not exist or cannot be loaded.
         """
         try:
-            if not self.pinecone_client.has_index(self.index_name):
-                logger.warning(
-                    f"Pinecone index '{self.index_name}' not found. "
-                    "You must call create_vector_store_and_retriever()."
-                )
-            vector_store =  PineconeVectorStore.from_existing_index(
+            vector_store =  self.redis_client.from_existing_index(
                 embedding=self.embedding_model,
                 index_name=self.index_name,
+                redis_url=self.redis_url
             )
             retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+            sample_data = retriever.invoke("what is acne?")
+            if len(sample_data) < 3:
+                logger.warning(f"Index {self.index_name} is empty or does not exist.")
+                
         except Exception as e:
             raise AppException(e)
         else:
@@ -59,10 +58,10 @@ class PineconeDB(EmbeddingModel):
 
     def create_vector_store_and_retriever(self,chunked_text,embedding_model):
         """
-        Creates a new Pinecone vector store from the given list of documents.
+        Creates a new redis vector store from the given list of documents.
 
         This function takes in a list of documents, an embedding model, and an index name.
-        It then creates a new Pinecone vector store from the documents, using the specified embedding model and index name.
+        It then creates a new redis vector store from the documents, using the specified embedding model and index name.
 
         If there is an error during the creation of the vector store, an AppException is raised.
         Otherwise, the created vector store is returned.
@@ -72,16 +71,16 @@ class PineconeDB(EmbeddingModel):
             embedding_model (Any): The embedding model to use for creating the vector store.
 
         Returns:
-            PineconeVectorStore: The created vector store.
+            redisVectorStore: The created vector store.
         """
         try:
-            self._create_index()
-
-            # create a new Pinecone vector store from the documents
-            doc_vector_store = PineconeVectorStore.from_documents(
+            # create a new redis vector store from the documents
+            doc_vector_store = self.redis_client.from_documents(
                 documents=chunked_text,  # list of documents to create the vector store from
                 embedding=embedding_model,  # the embedding model to use for creating the vector store
                 index_name=self.index_name,  # the name of the index to use for the vector store
+                redis_url=self.redis_url
+
             )
             retriever = doc_vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
         except Exception as e:
@@ -93,10 +92,10 @@ class PineconeDB(EmbeddingModel):
 
     def add_document_to_store(self,doc_vector_store,new_doc):
         """
-        Adds a new document to the Pinecone vector store.
+        Adds a new document to the redis vector store.
 
         Args:
-            doc_vector_store (PineconeVectorStore): The Pinecone vector store to add the document to.
+            doc_vector_store (RedisVectorStore): The redis vector store to add the document to.
             new_doc (Document): The document to add to the vector store.
 
         Raises:
@@ -107,30 +106,19 @@ class PineconeDB(EmbeddingModel):
         except Exception as e:
             raise AppException(e)
         
-        logger.info(f"Added new document to Pinecone vector store")
+        logger.info(f"Added new document to redis vector store")
 
-    def get_index(self):
-        index = self.pinecone_client.Index(self.index_name)
-        return index
 
 
 
     def _init_connection(self):
         try:
-            self.pinecone_client = Pinecone(api_key=pinecone_api_key)
+            self.redis_client = RedisVectorStore(
+                index_name=self.index_name,
+                redis_url = self.redis_url,
+                embeddings=self.embedding_model
+                )
         except Exception as e:
             raise AppException(e)
     
-    def _create_index(self):
-        if not self.pinecone_client.has_index(self.index_name):
-            self.pinecone_client.create_index(
-                name=self.index_name,
-                dimension=self.dimension,  # Dimension of the embedding model
-                metric="cosine", 
-                spec=ServerlessSpec(
-                    cloud="aws",  # or "gcp" depending on your setup
-                    region="us-east-1"  # choose the region you want
-                )
-            )
-            logger.info(f"Created Pinecone index: {self.index_name}")
-
+   

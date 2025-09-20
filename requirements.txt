@@ -1,4 +1,3 @@
-langchain
 langchain-groq
 langchain-community
 langchain-huggingface
@@ -6,6 +5,9 @@ pinecone
 langchain-pinecone
 fastapi
 uvicorn
+websockets
+jinja2
+requests
 python-dotenv
 pypdf
 sentence-transformers

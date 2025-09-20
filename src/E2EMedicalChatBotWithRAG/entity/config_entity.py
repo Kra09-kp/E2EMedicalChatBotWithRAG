@@ -8,4 +8,5 @@ class ChatBotConfig:
     system_prompt_path: Path
     llm_model_name: str
     index_name: str
+    redis_url: str
     dimension: int

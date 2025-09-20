@@ -1,11 +1,11 @@
 from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.utils import load_env_variable
 from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
 from langchain_huggingface import HuggingFaceEmbeddings
 from src.E2EMedicalChatBotWithRAG.preprocess import DocumentPreprocesser
 import torch
 
+# print("EmbeddingModel.py is loaded")
 
 class EmbeddingModel:
     def __init__(self,config=ConfigurationManager()):

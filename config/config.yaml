@@ -4,4 +4,5 @@ chatbot_config:
   SYSTEM_PROMPT_PATH: ./src/E2EMedicalChatBotWithRAG/prompts/system_prompt.txt
   LLM_MODEL_NAME: llama-3.1-8b-instant
   INDEX_NAME: medical-chatbot
+  REDIS_URL: redis://localhost:6380
   DIMENSION: 384

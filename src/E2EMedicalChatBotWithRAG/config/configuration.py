@@ -22,6 +22,7 @@ class ConfigurationManager:
                 system_prompt_path=chatbot_config['SYSTEM_PROMPT_PATH'],
                 llm_model_name=chatbot_config['LLM_MODEL_NAME'],
                 index_name=chatbot_config['INDEX_NAME'],
+                redis_url=chatbot_config['REDIS_URL'],
                 dimension=chatbot_config['DIMENSION']
             )
             return config
