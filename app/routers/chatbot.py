@@ -31,30 +31,8 @@ async def ask_ws(websocket: WebSocket):
                 await websocket.close(code=1003)
                 return
 
-            # Step 3: stream the answer token-by-token
-#             sample_response = """**Garlic-Butter Veggie & Egg Fried Rice**
-# (*Feeds 1–2 people*)
-
-# **Ingredients**
-
-# * 1 cup cooked rice (leftover rice from the fridge is perfect)
-# * 1 cup mixed veggies (frozen peas, carrots, capsicum, corn—whatever’s handy)
-# * 2 eggs
-# * 2 tbsp butter (or ghee/oil)
-# * 3–4 garlic cloves, finely chopped
-# * 1–2 tbsp soy sauce (or a splash of lemon + salt if you don’t have it)
-# * Black pepper & salt to taste
-# * Optional: chopped spring onion or coriander for garnish
-
-# Would you like a vegetarian alternative without eggs, or a different cuisine (like quick pasta or Indian tadka khichdi)?
-# """
-            
-#             # inside your websocket handler
-#             for word in sample_response:
-#                 await websocket.send_text(word)
-#                 await asyncio.sleep(0.005)  # tiny pause for “typing” effect (optional)
-
-            async for token in rag_chain.ainvoke(question):
+            # Step 3: stream the response tokens back to the client
+            for token in rag_chain.invoke(question):
                 await websocket.send_text(token)
 
             # Step 4: optionally signal completion
