@@ -6,6 +6,8 @@ from app.routers import chatbot
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
+
+
 templates = Jinja2Templates(directory="./app/templates")
 
 app.include_router(chatbot.router)

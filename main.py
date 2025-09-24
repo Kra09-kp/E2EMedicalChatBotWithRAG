@@ -1,5 +1,5 @@
 from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.vector_database import RedisDB
+from src.E2EMedicalChatBotWithRAG.vectorestores import RedisDB
 from src.E2EMedicalChatBotWithRAG.preprocess import DocumentPreprocesser
 from src.E2EMedicalChatBotWithRAG.exceptions import AppException
 from langchain.schema import Document

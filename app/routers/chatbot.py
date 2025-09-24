@@ -1,19 +1,41 @@
-from fastapi import APIRouter, HTTPException, WebSocket
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
-from E2EMedicalChatBotWithRAG.logger import logger
 from src.E2EMedicalChatBotWithRAG.chains.rag_chain import RAGChain
-from E2EMedicalChatBotWithRAG.exceptions import AppException
 from pydantic import BaseModel
-from starlette.responses import StreamingResponse
-import asyncio
+from src.E2EMedicalChatBotWithRAG.logger import logger
+from contextlib import asynccontextmanager
+from app.services import PineCone
+
 
 class Question(BaseModel):
     question: str
 
-router = APIRouter()
-rag_chain = RAGChain()
+@asynccontextmanager
+async def lifespan(router: APIRouter):
+    logger.info("Starting the Medical Chatbot")
+    try:
+        pc = PineCone()
+        
+        client = pc.init()
+        global rag_chain
+        rag_chain = await RAGChain.make_async(client=client)
+        logger.info("pinecone client initialized successfully")
+    except Exception as e:
+        logger.error(f"Error initializing pinecone client: {e}")
+        raise e
 
+    yield
+
+    try:
+        await client.close()
+        logger.info("pinecone client closed successfully")
+    except Exception as e:
+        logger.error(f"Error closing pinecone client: {e}")
+    logger.info("Medical Chatbot is shutting down")
+
+router = APIRouter(lifespan=lifespan,
+                   tags=["chatbot"]
+                   )
 
 @router.websocket("/ws/ask")
 async def ask_ws(websocket: WebSocket):
@@ -27,20 +49,26 @@ async def ask_ws(websocket: WebSocket):
             if not question:
                 await websocket.send_text("[[ERROR]] No question provided.")
                 continue
-            if not question:
-                await websocket.close(code=1003)
-                return
+            
 
             # Step 3: stream the response tokens back to the client
-            for token in rag_chain.invoke(question):
+            async for token in rag_chain.ainvoke(question):
+                # print(token)
                 await websocket.send_text(token)
 
             # Step 4: optionally signal completion
             await websocket.send_text("[[END]]")
 
+    except WebSocketDisconnect:
+        # client closed the connection – just exit
+        pass
+
     except Exception as e:
         print("WebSocket error:", e)
+        
     finally:
-        await websocket.close()
+        # close only if it’s still open
+        if websocket.client_state.name != "DISCONNECTED":
+            await websocket.close()
 
 

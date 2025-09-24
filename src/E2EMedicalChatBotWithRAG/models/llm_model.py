@@ -7,7 +7,7 @@ from src.E2EMedicalChatBotWithRAG.exceptions import AppException
 
 
 # print("LLMModel.py is loaded")
-load_env_variable("GROQ_API_KEY")
+
 
 class LLMAssistant:
     def __init__(self,config=ConfigurationManager()):
@@ -16,6 +16,7 @@ class LLMAssistant:
         """
         try:
             self.config = config.get_chatbot_config()
+            load_env_variable("GROQ_API_KEY")
         except Exception as e:
             logger.error(f"Error in ConfigurationManager: {e}")
             raise AppException(e) from e

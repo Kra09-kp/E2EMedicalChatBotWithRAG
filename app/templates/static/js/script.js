@@ -11,7 +11,7 @@ const sendBtn = document.getElementById("sendBtn");
 // Connect to FastAPI websocket
 const ws = new WebSocket("ws://localhost:8000/ws/ask");
 
-ws.onopen = () => console.log("Connected to chatbot server.");
+
 let botDiv = null;  // store the current bot message div
 let waitingForBot = false;
 
@@ -55,15 +55,16 @@ function toggleSendLock(lock) {
 // ... your previous setup code stays the same ...
 
 let responseTimeout = null;  // timeout handler
-
+let requestStart = 0;
 function startResponseTimeout() {
     clearResponseTimeout(); // just in case
+    requestStart = Date.now();
     responseTimeout = setTimeout(() => {
         removeTyping();
         addBubble("⚠️ Bot is taking too long. Please try again.", "bot");
         toggleSendLock(false);
         botDiv = null;
-    }, 15000); // 15 seconds timeout
+    }, 60000); // 15 seconds timeout
 }
 
 function clearResponseTimeout() {
@@ -86,6 +87,7 @@ function sendMessage() {
     toggleSendLock(true);
     showTyping();
     startResponseTimeout();  // start timeout
+    requestStart = Date.now();
 
     // Send via websocket
     try {
@@ -111,16 +113,30 @@ function startBotMessage() {
   markdownBuffer = "";
 }
 
+function handleBotReply(message) {
+    const duration = (Date.now() - requestStart) / 1000; // seconds
+    console.log(`Response took ${duration.toFixed(2)} seconds`);
+    clearResponseTimeout();
+    addBubble(message, "bot");
+}
+
+ws.onopen = () => {
+    console.log("Connected to chatbot server.");
+    addBubble("Hello! How can I help you today?","bot")
+}
 
 ws.onmessage = e => {
   const token = e.data;
 
   if (token === "[[END]]") {
-    flushMarkdown();
-    toggleSendLock(false);
-    botDiv = null;
-    clearResponseTimeout();
-    return;
+      flushMarkdown();
+      toggleSendLock(false);
+      botDiv = null;
+      clearResponseTimeout();
+      const duration = (Date.now() - requestStart) / 1000;
+      console.log(`Response took ${duration.toFixed(2)} seconds`);
+
+      return;
   }
 
   removeTyping();
@@ -168,3 +184,6 @@ sendBtn.addEventListener("click", () => sendMessage());
 chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") sendMessage();
 });
+
+
+// when the bot response actually comes back:
