@@ -4,9 +4,18 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from app.routers import chatbot
 from fastapi.responses import HTMLResponse
+from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
-
+app = FastAPI(title="E2E Medical ChatBot", 
+            description="An end-to-end medical chatbot application.",
+            version="1.0.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://e2e-medical-chatbot.onrender.com"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 templates = Jinja2Templates(directory="./app/templates")
 
