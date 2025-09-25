@@ -1,6 +1,7 @@
 import sys
 import datetime
 from typing import Optional
+from types import ModuleType
 
 
 
@@ -8,14 +9,14 @@ class AppException(Exception):
     """
     Base class for all custom exceptions in the web application.
     """
-    def __init__(self, error_message: Exception, error_detail: Optional[sys]=None): #type: ignore
+    def __init__(self, error_message: Exception, error_detail: Optional[ModuleType]=None): 
         """
         error_message: The error message to be displayed.
         error_detail: The sys module's error detail.
         """
         super().__init__(error_message)
         
-        self.exc_info = error_detail.exc_info() if error_detail else sys.exc_info()
+        self.exc_info = error_detail.exc_info() if error_detail else sys.exc_info() 
 
         self.error_message = AppException.error_message_detail(error_message)
 
