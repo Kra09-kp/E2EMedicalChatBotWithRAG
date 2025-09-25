@@ -2,8 +2,7 @@ langchain-groq
 langchain-community
 langchain-huggingface
 pinecone
-"pinecone[asyncio]"
-"pinecone[grpc]"
+pinecone[asyncio]
 langchain-pinecone
 fastapi
 uvicorn

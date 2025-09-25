@@ -51,6 +51,3 @@ jobs:
       - name: 🚀 Push image to DockerHub
         run: |
           docker push kirtipogra/e2e-medical-chatbot:latest
-
-
-      
