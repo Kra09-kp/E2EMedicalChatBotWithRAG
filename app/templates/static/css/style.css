@@ -53,14 +53,13 @@
         .chat-window {
             flex: 1;
             padding: 1rem;
-            overflow-y: auto;              /* vertical scroll */
-            scrollbar-width: thin;         /* Firefox */
+            overflow-y: auto;             
+            scrollbar-width: thin;         
             scrollbar-color: #4a90e2 #e0e0e0;
 
-            /* key part for breaking super-long text */
-            word-wrap: break-word;         /* legacy support */
-            overflow-wrap: break-word;     /* modern */
-            word-break: break-all;         /* last-resort for single huge words */
+            word-wrap: normal;            
+            overflow-wrap: break-word;     
+            white-space: normal;           
         }
 
 

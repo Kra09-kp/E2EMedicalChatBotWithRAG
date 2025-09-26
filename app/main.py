@@ -11,7 +11,8 @@ app = FastAPI(title="E2E Medical ChatBot",
             version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://e2e-medical-chatbot.onrender.com"],
+    allow_origins=["https://e2e-medical-chatbot.onrender.com",
+                   "http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

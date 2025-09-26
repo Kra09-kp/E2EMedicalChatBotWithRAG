@@ -9,6 +9,9 @@ const chatInput = document.getElementById("chatInput");
 const sendBtn = document.getElementById("sendBtn");
 
 // Connect to FastAPI websocket
+// for local testing use:
+// const ws = new WebSocket("ws://localhost:8000/ws/ask");
+// for production use:
 const ws = new WebSocket("wss://e2e-medical-chatbot.onrender.com/ws/ask");
 
 
