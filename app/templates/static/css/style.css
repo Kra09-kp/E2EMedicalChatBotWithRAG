@@ -37,7 +37,7 @@
         .chat-card {
             width: 100%;
             max-width: 420px;
-            height: 600px;
+            height: 90vh;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 24px;
