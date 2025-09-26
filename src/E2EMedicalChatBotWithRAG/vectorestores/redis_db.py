@@ -1,7 +1,7 @@
-from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
-from src.E2EMedicalChatBotWithRAG.models.embedding_model import EmbeddingModel
+from E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
+from E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.models.embedding_model import EmbeddingModel
 from langchain_redis import RedisVectorStore
 
 

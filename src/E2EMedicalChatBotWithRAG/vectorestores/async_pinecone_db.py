@@ -1,9 +1,9 @@
-from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.utils import load_env_variable
-from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
-from src.E2EMedicalChatBotWithRAG.models import EmbeddingModel
-from src.E2EMedicalChatBotWithRAG.retrievers import PineconeAsyncRetriever
+from E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.utils import load_env_variable
+from E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
+from E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.models import EmbeddingModel
+from E2EMedicalChatBotWithRAG.retrievers import PineconeAsyncRetriever
 from pinecone import ServerlessSpec, PineconeAsyncio
 from langchain_pinecone import PineconeVectorStore
 
@@ -19,7 +19,6 @@ class AsyncPineconeDB(EmbeddingModel):
             self.dimension = self.config.dimension  # Dimension of the embedding model
             super().__init__()
             self.pinecone_client = client
-            self.embedding_model = self._get_model()
             
 
         except Exception as e:
@@ -45,7 +44,7 @@ class AsyncPineconeDB(EmbeddingModel):
                     "You must call create_vector_store_and_retriever()."
                 )
             
-            retriever = PineconeAsyncRetriever(embedding_model=self.embedding_model,
+            retriever = PineconeAsyncRetriever(embedding_model=EmbeddingModel(),
                                             index=await self.get_index(),
                                             k=k)
         except Exception as e:
@@ -73,6 +72,9 @@ class AsyncPineconeDB(EmbeddingModel):
         """
         try:
             await self._create_index()
+            await self.set_embedding_model()
+            logger.info(f"Creating Pinecone vector store with index: {self.index_name}")
+            logger.info(f"Using embedding model: {self.embedding_model}")
 
             # create a new Pinecone vector store from the documents
             await PineconeVectorStore.afrom_documents(
@@ -152,3 +154,8 @@ class AsyncPineconeDB(EmbeddingModel):
 
     async def close(self):
         await self.pinecone_client.close()
+
+    async def set_embedding_model(self):
+        if not self.embedding_model:
+            self.embedding_model = self._get_model()
+        return self

@@ -1,7 +1,7 @@
-from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.models.llm_model import LLMAssistant
-from src.E2EMedicalChatBotWithRAG.vectorestores import RedisDB, PineconeDB, AsyncPineconeDB
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.models.llm_model import LLMAssistant
+from E2EMedicalChatBotWithRAG.vectorestores import RedisDB, PineconeDB, AsyncPineconeDB
+from E2EMedicalChatBotWithRAG.exceptions import AppException
 from langchain.schema.runnable import RunnablePassthrough
 
 class RAGChain:

@@ -7,6 +7,5 @@ Make sure the answer is in detail and short.
 
 Context: {context}
 
-If the question is out of context, politely inform them that you are tuned to only answer questions that are related to the context.
-
+If the question is out of context and not related to medical, politely answer that you are here to help with medical questions only or related to the context.
 Always answer in clean markdown.Don't add unnecessary title.

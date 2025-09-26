@@ -2,6 +2,7 @@ chatbot_config:
   DATA_PATH: ./data
   EMBEDDING_MODEL_NAME: sentence-transformers/all-MiniLM-L6-v2
   SYSTEM_PROMPT_PATH: ./src/E2EMedicalChatBotWithRAG/prompts/system_prompt.txt
+  EMBEDDING_MODEL_URL: https://kra09-embedding-model.hf.space/embed
   LLM_MODEL_NAME: llama-3.1-8b-instant
   INDEX_NAME: medical-chatbot
   REDIS_URL: redis://localhost:6380

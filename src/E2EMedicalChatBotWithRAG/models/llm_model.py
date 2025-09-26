@@ -1,9 +1,9 @@
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.utils import load_env_variable,get_prompt_text
-from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.utils import load_env_variable,get_prompt_text
+from E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
+from E2EMedicalChatBotWithRAG.exceptions import AppException
 
 
 # print("LLMModel.py is loaded")

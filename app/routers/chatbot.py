@@ -1,8 +1,7 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
-from src.E2EMedicalChatBotWithRAG.chains.rag_chain import RAGChain
-from pydantic import BaseModel
-from src.E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.chains.rag_chain import RAGChain
+from E2EMedicalChatBotWithRAG.logger import logger
 from contextlib import asynccontextmanager
 from app.services import PineCone
 

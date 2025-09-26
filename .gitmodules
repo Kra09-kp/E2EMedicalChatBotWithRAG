@@ -1,0 +1,3 @@
+[submodule "deploy-model/embedding-model"]
+	path = deploy-model/embedding-model
+	url = https://huggingface.co/spaces/Kra09/embedding-model

@@ -1,7 +1,7 @@
 import yaml
 import sys,os
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
-from src.E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.logger import logger
 from pathlib import Path
 
 def read_yaml_file(file_path: str) -> dict:

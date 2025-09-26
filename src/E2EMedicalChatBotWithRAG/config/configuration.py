@@ -1,10 +1,8 @@
-import os
-import sys
-from src.E2EMedicalChatBotWithRAG.entity.config_entity import ChatBotConfig
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
-from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.constants import *
-from src.E2EMedicalChatBotWithRAG.utils import read_yaml_file
+from E2EMedicalChatBotWithRAG.entity.config_entity import ChatBotConfig
+from E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.constants import *
+from E2EMedicalChatBotWithRAG.utils import read_yaml_file
 
 class ConfigurationManager:
     def __init__(self,config_file_path:str = CONFIG_FILE_PATH):
@@ -19,6 +17,7 @@ class ConfigurationManager:
             config = ChatBotConfig(
                 data_path=chatbot_config['DATA_PATH'],
                 embedding_model_name=chatbot_config['EMBEDDING_MODEL_NAME'],
+                embedding_model_url=chatbot_config['EMBEDDING_MODEL_URL'],
                 system_prompt_path=chatbot_config['SYSTEM_PROMPT_PATH'],
                 llm_model_name=chatbot_config['LLM_MODEL_NAME'],
                 index_name=chatbot_config['INDEX_NAME'],

@@ -1,10 +1,10 @@
-from src.E2EMedicalChatBotWithRAG.logger import logger
-from src.E2EMedicalChatBotWithRAG.exceptions import AppException
+from E2EMedicalChatBotWithRAG.logger import logger
+from E2EMedicalChatBotWithRAG.exceptions import AppException
 from langchain_community.document_loaders import PyPDFLoader, DirectoryLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from typing import List
 from langchain.schema import Document
-from src.E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
+from E2EMedicalChatBotWithRAG.config.configuration import ConfigurationManager
 
 
 class DocumentPreprocesser:
